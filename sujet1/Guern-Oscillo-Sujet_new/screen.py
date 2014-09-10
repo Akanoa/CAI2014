@@ -21,6 +21,10 @@ class Screen(Canvas):
         self.height = height
         self.signal_X = None
         self.color_X = "red"
+        self.signal_Y = None
+        self.color_Y = "blue"
+        self.signal_XY = None
+        self.color_XY = "green"
 
         self.configure(bg=background, bd=2, relief="sunken")
         self.bind("<Configure>", self.resize)
@@ -41,25 +45,36 @@ class Screen(Canvas):
         """
         self.delete(ALL)
 
+        #constants
+        PADDING_LEFT = PADDING_RIGHT = PADDING_TOP = PADDING_BOTTOM = 10
+        LANDMARK_SIZE = 5
+
+        #dimensions
+        screenW  = (self.width-PADDING_RIGHT-PADDING_LEFT)
+        screenH  = (self.height-PADDING_TOP-PADDING_BOTTOM)
+        sizeStepW = screenW/nX
+        sizeStepH = screenH/nY
+
+        #draw frame
+        self.create_rectangle(PADDING_LEFT, PADDING_BOTTOM, self.width-PADDING_RIGHT, self.height-PADDING_BOTTOM)
+
         #draw axis
+        self.create_line(PADDING_LEFT, self.height/2, self.width-PADDING_RIGHT, self.height/2, width=1.5) 
+        self.create_line(self.width/2, PADDING_TOP,self.width/2, self.height-PADDING_BOTTOM, width=1.5)
+
+        #draw landmarks
         #hor
-        self.create_line(10, self.height/2, self.width-5, self.height/2, arrow=LAST)
-        #vert
-        self.create_line(10, self.height-5,10,5,arrow=LAST)
+        for t in range(nX/2):
+            width = t*sizeStepW
+            self.create_line(self.width/2+width, self.height/2+LANDMARK_SIZE ,self.width/2+width, self.height/2-LANDMARK_SIZE)
+            self.create_line(self.width/2-width, self.height/2+LANDMARK_SIZE ,self.width/2-width, self.height/2-LANDMARK_SIZE)
 
+        #ver
+        for t in range(nY/2):
+            height = t*sizeStepH
+            self.create_line(self.width/2-LANDMARK_SIZE, self.height/2+height,self.width/2+LANDMARK_SIZE, self.height/2+height)
+            self.create_line(self.width/2-LANDMARK_SIZE, self.height/2-height,self.width/2+LANDMARK_SIZE, self.height/2-height) 
 
-        sizeOneStepW = self.width/nX
-        sizeOneStepH = self.height/nY
-        #draw grid hor
-        for t in range(1,nX+2):
-            actualWidth= t*sizeOneStepW
-            self.create_line(10+actualWidth,10,10+actualWidth,self.height-5)
-
-        #draw grid hor
-        for t in range(1,nY/2+2):
-            actualHeight= t*sizeOneStepH
-            self.create_line(10, self.height/2 + actualHeight, self.width-5, self.height/2 + actualHeight)
-            self.create_line(10, self.height/2 - actualHeight, self.width-5, self.height/2 - actualHeight)
 
     def plot_signal(self, name, signal=None):
         """affichage d'un signal
@@ -73,6 +88,16 @@ class Screen(Canvas):
                     self.delete(self.signal_X)
                 plot = [(x*self.width, y*self.height + self.height/2) for (x, y) in signal]
                 self.signal_X = self.create_line(plot, fill=self.color_X, smooth=1, width=3)
+            if name == "Y":
+                if self.signal_Y > -1:
+                    self.delete(self.signal_Y)
+                plot = [(x*self.width, y*self.height + self.height/2) for (x, y) in signal]
+                self.signal_Y = self.create_line(plot, fill=self.color_Y, smooth=1, width=3)
+            if name == "XY":
+                if self.signal_XY > -1:
+                    self.delete(self.signal_XY)
+                plot = [(x*self.width, y*self.height + self.height/2) for (x, y) in signal]
+                self.signal_XY = self.create_line(plot, fill=self.color_XY, smooth=1, width=3)
 
 if __name__ == "__main__":
     root = Tk()

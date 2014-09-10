@@ -107,7 +107,7 @@ class MenuBar(Frame):
         x_parameters = [int(e) for e in datas[0].split(";")]
         y_parameters = [int(e) for e in datas[1].split(";")]
         self.parent.signal_controlX.set_parameter(*x_parameters)
-        self.parent.signal_controlX.set_parameter(*y_parameters)
+        self.parent.signal_controlY.set_parameter(*y_parameters)
         self.parent.time_control.scale.set(int(datas[2]))
 
     def exit(self):

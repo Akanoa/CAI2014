@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from Tkinter import Tk, Frame
+from Tkinter import Tk, Frame, IntVar, Checkbutton
 
 from screen import Screen
 from timebase import TimeBase
 from generator import Generator
 from menuBar import MenuBar
+
 
 class Oscilloscope(Frame):
     """ Oscilloscope 
@@ -28,21 +29,49 @@ class Oscilloscope(Frame):
         # Modele
         self.time = 0
         self.signal = None
+        # # Vues
+        # self.menuBar         = MenuBar(parent=self)
+        # self.screen          = Screen(parent=self)
+        # self.frame = Frame(master=self)
+        # # Controleurs
+        # self.time_control = TimeBase(parent=self)
+        # self.signal_controlX = Generator(parent=self, name="X", color="red")
+        # self.signal_controlY = Generator(parent=self, name="Y", color="blue")
+        # # Affichage Vues, Controleurs
+        # self.menuBar.pack()
+        # self.screen.pack()
+
+        # self.signal_controlX.pack(side="left")
+        # self.signal_controlY.pack(side="left")
+        # self.time_control.pack()
+
         # Vues
-        self.menuBar         = MenuBar(parent=self)
-        self.screen          = Screen(parent=self)
-        self.frame = Frame(master=self)
+        self.menuBar          = MenuBar(parent=self)
+        self.screenT          = Screen(parent=self)
+        self.screenXY         = Screen(parent=self)
         # Controleurs
-        self.time_control = TimeBase(parent=self)
         self.signal_controlX = Generator(parent=self, name="X", color="red")
         self.signal_controlY = Generator(parent=self, name="Y", color="blue")
+        self.signal_controlXY = Generator(parent=self, name="XY", color="blue")
+        self.time_control = TimeBase(parent=self)
+        varX  = IntVar()
+        varY  = IntVar()
+        varXY = IntVar()
+        self.showX = Checkbutton(parent, text="X", variable=varX)
+        self.showY = Checkbutton(parent, text="Y", variable=varY)
+        self.showXY = Checkbutton(parent, text="XY", variable=varXY)
         # Affichage Vues, Controleurs
-        self.menuBar.pack()
-        self.screen.pack()
+        self.menuBar.grid(column=0, row=0)
+        self.screenT.grid(column=0,row=1)
+        self.screenXY.grid(column=1,row=1)
+        self.signal_controlX.grid(column=0, row=2)
+        self.signal_controlY.grid(column=0, row=3)
+        self.time_control.grid(column=0, row=4)
 
-        self.signal_controlX.pack(side="left")
-        self.signal_controlY.pack(side="left")
-        self.time_control.pack()
+        self.showX.grid(column=1, row=2)
+        self.showY.grid(column=1, row=3)
+        self.showXY.grid(column=1, row=4)
+
 
         self.configure(width=width, height=height)
 
@@ -68,7 +97,7 @@ class Oscilloscope(Frame):
         if signal :
             signal = signal[0:(len(signal)/msdiv) + 1]
             signal = map(lambda (x, y): (x*msdiv, y), signal)
-            self.screen.plot_signal(name, signal)
+            self.screenT.plot_signal(name, signal)
         return signal
 
 
