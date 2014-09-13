@@ -7,6 +7,7 @@ from screen import Screen
 from timebase import TimeBase
 from generator import Generator
 from menuBar import MenuBar
+import tkMessageBox
 
 
 class Oscilloscope(Frame):
@@ -26,7 +27,7 @@ class Oscilloscope(Frame):
         """
         Frame.__init__(self)
         self.master.title("Oscilloscope")
-        # Modele
+        # Modelethreading.Thread(None, affiche, None, (200,), {'nom':'thread a'}) 
         self.time = 0
         self.signal = None
         # # Vues
@@ -95,7 +96,7 @@ class Oscilloscope(Frame):
         name : nom de la courbe (X,Y, X-Y)
         signal : liste des couples (temps,elongation) ou (elongation X, elongation Y)
         """
-        print("Base de Temps :", self.get_time())
+        #print("Base de Temps :", self.get_time())
         msdiv = self.get_time()
         if signal :
             signal = signal[0:(len(signal)/msdiv) + 1]
@@ -105,21 +106,24 @@ class Oscilloscope(Frame):
             self.screenT.change_signal(name, signal,color)
 
             listCurveScreenT = self.screenT.listCurve
-            listCurveX = listCurveScreenT[0]
-            listCurveY = listCurveScreenT[1]
 
-            curveXY= []
-            for i in range(len(listCurveX)-1):
-                curveXY.append((listCurveX[1][i][1]+0.05,listCurveY[1][i][1]))
-            self.screenXY.change_signal("XY", curveXY, "green")
+            if len(listCurveScreenT) > 1:
+                listCurveX = listCurveScreenT[0]
+                listCurveY = listCurveScreenT[1]
+
+                curveXY= []
+                for i in range(len(listCurveX)-1):
+                    #create a new curve using the elongation of X & Y curves
+                    curveXY.append((listCurveX[1][i][1]+0.05,listCurveY[1][i][1]))
+                self.screenXY.change_signal("XY", curveXY, "green")
         return signal
 
     def update_show(self, name= None):
         """
-        Function de test check Box
+        Function permettant de changer l'état d'une courbe ( affichée ou non) en fonction des checkbox
         """
-        print "EtatX", self.varX.get(), " EtatY" , self.varY.get(), " EtatY" , self.varXY.get()
-        print name
+        #print "EtatX", self.varX.get(), " EtatY" , self.varY.get(), " EtatY" , self.varXY.get()
+        #print name
 
         if name == "X":
             self.screenT.show_curve(name, self.varX.get())
@@ -130,7 +134,21 @@ class Oscilloscope(Frame):
         #self.signal_controlX.update_signal(None)
         #self.signal_controlY.update_signal(None)
 
+    def exit(self):
+        """
+        Prend en charge l'appui sur la croix pour quitter l'application, va stopper les threads
+        """
+        if tkMessageBox.askokcancel("Quitter l'application?", "Etes vous sur de vouloir quitter l'application oscilloscope?"):
+            self.screenT.stop_draw()
+            self.screenXY.stop_draw()
+            self.master.quit()
+
 if __name__ == "__main__":
     root = Tk()
     oscillo = Oscilloscope(root)
+    ##don't forget the window close event
+    try:
+        root.protocol("WM_DELETE_WINDOW", oscillo.exit)
+    except Exception, e:
+        pass
     root.mainloop()

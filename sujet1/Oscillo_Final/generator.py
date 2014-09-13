@@ -37,8 +37,8 @@ class Generator(Frame):
 
     def update_signal(self, event):
         """mise a jour de courbe si modifications (amplitude, frequence, phase)."""
-        print("Vibration.update_signal()")
-        print("Amplitude :", self.scale_A.get())
+        #print("Vibration.update_signal()")
+        #print("Amplitude :", self.scale_A.get())
         scaling=0.05
         amp = scaling*self.scale_A.get()
         fre = scaling*self.scale_F.get()
@@ -51,7 +51,7 @@ class Generator(Frame):
     def generate_signal(self, a=1.0, f=2.0, p=0):
         """Calcul de l'elongation, amplitude, frequence et phase sur une periode."""
         signal = []
-        samples = 50
+        samples = 100
         for t in range(0, samples):
             samples = float(samples)
             e = a * sin((2*pi*f*(t/samples)) - p)

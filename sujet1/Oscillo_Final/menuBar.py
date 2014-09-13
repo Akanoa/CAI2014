@@ -29,7 +29,13 @@ class MenuBar(Frame):
         menuFile.add_command(label='Sauvegarder sous...',command=self.saveAs)
         menuFile.add_command(label='Charger...',command=self.load)
         menuFile.add_separator()
-        menuFile.add_command(label='Quitter',command=self.exit)
+
+        #Search for an exit function on the parent, or take the default one from MenuBar class if not found
+        try:
+            menuFile.add_command(label='Quitter',command=self.parent.exit)
+        except AttributeError:
+            menuFile.add_command(label='Quitter',command=self.exit)
+            
         mbuttonFile.configure(menu=menuFile)
 
         mbuttonHelp = Menubutton(self,text='Aide')
@@ -45,7 +51,7 @@ class MenuBar(Frame):
         options['defaultextension'] = '.txt'
         options['filetypes'] = [('text files', '.txt'),('all files', '.*')]
         options['initialdir'] = 'C:\\'
-        options['initialfile'] = 'myfile.txt'
+        options['initialfile'] = 'save.txt'
         options['parent'] = parent
         options['title'] = 'Choissisez le fichier'
  
@@ -70,7 +76,10 @@ class MenuBar(Frame):
         if self.fileOpened == None:
             fd = open("save.txt", "w")
         else:
-            fd = open(self.fileOpened, "w")
+            try:
+                fd = open(self.fileOpened, "w")
+            except Exception:
+                fd = open("save.txt", "w")
 
         with fd:
             fd.write("#########################################################################\n")
@@ -102,13 +111,13 @@ class MenuBar(Frame):
         self.file_opt['title'] = 'Choissisez le fichier depuis lequel vous souhaitez charger les donnees'
         fd = self.askForFileToRead()
 
-        #TODO
-        datas = fd.readlines()[7:10]
-        x_parameters = [int(e) for e in datas[0].split(";")]
-        y_parameters = [int(e) for e in datas[1].split(";")]
-        self.parent.signal_controlX.set_parameter(*x_parameters)
-        self.parent.signal_controlY.set_parameter(*y_parameters)
-        self.parent.time_control.scale.set(int(datas[2]))
+        if (fd):
+            datas = fd.readlines()[7:10]
+            x_parameters = [int(e) for e in datas[0].split(";")]
+            y_parameters = [int(e) for e in datas[1].split(";")]
+            self.parent.signal_controlX.set_parameter(*x_parameters)
+            self.parent.signal_controlY.set_parameter(*y_parameters)
+            self.parent.time_control.scale.set(int(datas[2]))
 
     def exit(self):
         """
