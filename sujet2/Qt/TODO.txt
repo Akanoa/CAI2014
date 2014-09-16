@@ -1,0 +1,73 @@
+Objectifs du TP
+===============
+Fonctionnalites de base  pour realiser de maniere la plus interactive possible un  dessin (cf poly)
+
+IHM Editeur graphique 
+=====================
+Doit contenir les actions :
+       - dans la barre d'actions (toutes les actions possibles)
+       - dans la barre d'outils (les actions les plus courantes)
+       - dans la zone cliente avec menu surgissant (les actions sur la zone client)
+
+PainterWindow :  Selection d'information
+========================================
+File : New (Warning dialog)
+       ------------
+       Open
+       Save        (File selection dialog)
+       Save As
+       -----------
+       Exit (Question dialog)
+
+Tools : Freehand
+        Line
+        Rectangle
+        Ellipse
+        Polygon
+        ----------
+        text 
+
+Style : Pen (submenu)
+          color  (Color selection  dialog)
+          line   (submenu)
+          width  (submenu or dialog)
+        Brush (submenu)
+          color  (Color selection  dialog)
+          fill (submenu or dialog))
+        Font (Font selection dialog)
+
+Help : About Us (Information dialog : Noms et Prenoms)
+       About Qt (Qt information dialog)
+
+
+Popup : Tools (cf barre d'actions Tools )
+        Style  (cf barre d'actions Style )
+        ---------
+        Erase (Warning dialog)
+
+PainterWindowArea : Interaction
+===============================
+Gestion des actions sur les composants
+
+Trace elastique : sans remplissage (rubberband)
+Trace final  : avec les styles selectionnes
+
+Fichier README.txt
+==================
+Documentation sur l'installation, l'utilisation de l'IHM, les problemes eventuels rencontres.
+
+Archive a fournir : Nom1_Nom2_Qt.tgz
+===================================
+ex : tar zcvf Dupond_pupont_Qt.tgz Dupond_Dupont_Qt/
+
+Sous le repertoire : /home/TP/TPrendu/nedelec/CAI/Qt
+Ne contient que le CODE SOURCE (Include/*.h, Src/*.cpp)
+et les données necessaire au projet (*.pro, Images/*.png Data/* ....)
+
+On doit pouvoir recreer le makefile et regenerer l'executable a partir de ces fichiers et des instructions du fichier README.txt
+
+Attention
+=========
+Ne pas oublier de supprimer les messages de debug .......
+
+

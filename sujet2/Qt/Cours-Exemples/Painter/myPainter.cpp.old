@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+#include "myPainter.h"
+
+MyPainter::MyPainter(void) {
+ cerr << this->rect().height() << endl;
+ cerr << this->rect().width() << endl;
+ cerr << this->height() << endl;
+ cerr << this->width() << endl;
+ _buffer = new QPixmap(this->size());
+ _buffer->fill(QColor(255,255,255));
+//  this->render(_buffer);
+ _buffer->grabWidget(this);
+ _paintBuffer = new QPainter(_buffer);
+}
+
+MyPainter::~MyPainter(void) {
+}
+
+void MyPainter::drawing(QPaintDevice* fenetre) {
+ QPainter paintWindow(fenetre);
+ paintWindow.drawLine(_startPoint,_endPoint);
+// paintWindow.drawPixmap(paintWindow.window(), *_buffer);
+/*
+ QRect dim = paintWindow.window();
+ paintWindow.setPen(QPen(Qt::blue, 4)) ;
+ paintWindow.setBrush(QBrush(Qt::white)) ;
+ paintWindow.drawRect(dim) ;
+ paintWindow.setPen(QPen(Qt::green, 1)) ;
+ paintWindow.drawLine(dim.topLeft(), dim.bottomRight()) ;
+ paintWindow.drawLine(_startPoint,_endPoint);
+*/
+// paintPixmap.drawLine(_startPoint,_endPoint);
+// paintWindow.drawPixmap(paintWindow.window(),*_buffer);
+}
+
+void MyPainter::drawingBuffer(QPainter* paint) {
+ paint->drawLine(_startPoint,_endPoint);
+}
+void MyPainter::mousePressEvent(QMouseEvent* evt) {
+ cerr << "MyPainter::mousePressEvent()"<< endl;
+ if (evt->button() == Qt::LeftButton) {
+   cerr << "evt->pos() :" << evt->pos().x() << "," << evt->pos().y()  << endl;
+   _startPoint = evt->pos();
+   _endPoint = evt->pos();
+ }
+}
+void MyPainter::mouseMoveEvent(QMouseEvent* evt) {
+ cerr << "MyPainter::mouseMoveEvent()"<< endl;
+ cerr << "before : " << endl;
+ cerr << "start :" << _startPoint.x()  << "," << _startPoint.y() << endl;
+ cerr << "end :" << _endPoint.x()  << "," << _endPoint.y() << endl;
+ _endPoint = evt->pos();
+ cerr << "after : " << endl;
+ cerr << "end :" << _endPoint.x()  << "," << _endPoint.y() << endl;
+ update();
+
+}
+
+void MyPainter::mouseReleaseEvent(QMouseEvent* evt) {
+ cerr << "MyPainter::mouseReleaseEvent()"<< endl;
+ if (evt->button() == Qt::LeftButton) {
+   cerr << "start :" << _startPoint.x()  << "," << _startPoint.y() << endl;
+   cerr << "end :" << _endPoint.x()  << "," << _endPoint.y() << endl;
+  update();
+ }
+}
+
+void MyPainter::paintEvent(QPaintEvent* evt) {
+ cerr << "MyWidget::paintEvent" << endl;
+ QWidget::paintEvent(evt);
+ drawing(this);
+// drawingBuffer(_paintBuffer);
+ 
+/*
+ QPainter painter(this);
+ QPainter paintBuffer(_buffer);
+ paintBuffer.drawLine(_startPoint,_endPoint);
+ cerr << this->rect().width() << endl;
+ painter.drawPixmap(this->rect(),*_buffer);
+*/
+/*
+ QPixmap buffer(this->width(),this->height());
+ QPainter paintBuff(&buffer);
+ paintBuff.drawLine(_startPoint,_endPoint);
+ paintBuff.end();
+*/
+}
+/*
+void PanelWindow::paintEvent(QPaintEvent *event){  
+      
+    QPixmap buffer(500,500);  
+    QPainter painter(&buffer); 
+ 
+    QPainter final(this);  
+    final.drawPixmap(0,0, buffer);  
+}
+*/

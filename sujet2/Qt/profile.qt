@@ -1,0 +1,2 @@
+export QTDIR=/usr/lib64/qt4
+export PATH=/usr/lib64/qt4/bin:$PATH
