@@ -1,13 +1,13 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'paintWindow.h'
 **
-** Created: Tue Sep 16 17:23:53 2014
+** Created: Wed 17. Sep 19:36:09 2014
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.6.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "Include/paintWindow.h"
+#include "../../Guern-Teneau_Qt_B009/Include/paintWindow.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'paintWindow.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 62
@@ -23,7 +23,7 @@ static const uint qt_meta_data_PaintWindow[] = {
        4,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+       9,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -40,7 +40,8 @@ static const uint qt_meta_data_PaintWindow[] = {
       61,   12,   12,   12, 0x08,
       71,   12,   12,   12, 0x08,
       79,   12,   12,   12, 0x08,
-      88,   12,   12,   12, 0x08,
+      97,   12,   12,   12, 0x08,
+     106,   12,   12,   12, 0x08,
 
        0        // eod
 };
@@ -48,7 +49,8 @@ static const uint qt_meta_data_PaintWindow[] = {
 static const char qt_meta_stringdata_PaintWindow[] = {
     "PaintWindow\0\0digit\0toolMapped(int)\0"
     "quit()\0_newFile()\0_save()\0_saveAs()\0"
-    "_open()\0_about()\0_aboutQt()\0"
+    "_open()\0_changePenColor()\0_about()\0"
+    "_aboutQt()\0"
 };
 
 const QMetaObject PaintWindow::staticMetaObject = {
@@ -86,11 +88,12 @@ int PaintWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 3: _save(); break;
         case 4: _saveAs(); break;
         case 5: _open(); break;
-        case 6: _about(); break;
-        case 7: _aboutQt(); break;
+        case 6: _changePenColor(); break;
+        case 7: _about(); break;
+        case 8: _aboutQt(); break;
         default: ;
         }
-        _id -= 8;
+        _id -= 9;
     }
     return _id;
 }

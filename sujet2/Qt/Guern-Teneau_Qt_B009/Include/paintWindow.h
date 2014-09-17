@@ -14,11 +14,14 @@
 #include <QScrollArea>
 #include <QSignalMapper>
 #include <QFileDialog>
+#include <QColorDialog>
+#include <QKeyEvent>
 
 #include <QDebug>
 #include <QDate>
 
 #include "paintArea.h"
+
 
 class PaintWindow : public QMainWindow
 {
@@ -34,6 +37,8 @@ class PaintWindow : public QMainWindow
     void _save(void);
     void _saveAs(void);
     void _open(void);
+    void _changePenColor(void);
+    void _changeBrushColor(void);
     void _about(void);
     void _aboutQt(void);
   private :
@@ -42,7 +47,9 @@ class PaintWindow : public QMainWindow
    void _createActions(void);
    void _connectActions(void);
    void _connectSignals(void);
-   void _createDialogs(void);
+
+ protected :
+   void keyPressEvent( QKeyEvent *event );
 
    // client
    PaintArea *_area;
@@ -55,11 +62,12 @@ class PaintWindow : public QMainWindow
    QAction *_newAct, *_openAct, *_saveAct, *_saveAsAct, *_exitAct, *_aboutAct, *_aboutQtAct;
    QActionGroup *_toolsQag;
    QAction *_freehandAct, *_lineAct, *_rectAct, *_elipsisAct, *_polyAct, *_textAct;
-   QAction *_colorPenAct, *_colorBrushAct, *_fontAct;;
+   QAction *_colorPenAct, *_colorBrushAct, *_fontAct, *_fillBrushAct;
    // mapping 
    QSignalMapper *_signalMapper;
-   //Dialog
+   //Filename
    QString *_savefilename;
+   QColor _colorPen;
 };
 #endif
 

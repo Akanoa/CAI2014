@@ -18,9 +18,9 @@ PaintWindow::PaintWindow(QWidget *parent) : QMainWindow(parent) {
   _signalMapper->setMapping(_freehandAct, TOOLS_ID_FREEHAND);
   _signalMapper->setMapping(_lineAct, TOOLS_ID_LINE);
   _signalMapper->setMapping(_rectAct, TOOLS_ID_RECTANGLE);
-  _signalMapper->setMapping(_rectAct, TOOLS_ID_CIRCLE);
+  _signalMapper->setMapping(_elipsisAct, TOOLS_ID_CIRCLE);
   _signalMapper->setMapping(_polyAct, TOOLS_ID_POLYGON);
-  _signalMapper->setMapping(_rectAct, TOOLS_ID_TEXT);
+  _signalMapper->setMapping(_textAct, TOOLS_ID_TEXT);
 
   _savefilename = new QString("");
 
@@ -40,7 +40,7 @@ void PaintWindow::_createMenus(void) {
  _linePenSubMenu = _penSubMenu->addMenu( tr("&Line") );
  _widthPenSubMenu = _penSubMenu->addMenu( tr("&Width"));
  _brushSubMenu = _styleMenu->addMenu( tr("&Brush") );
- _fillBrushSubMenu = _brushSubMenu->addMenu( tr("&Fill") );
+ //_fillBrushSubMenu = _brushSubMenu->addMenu( tr("&Fill") );
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_createToolBars(void) {
@@ -86,16 +86,20 @@ void PaintWindow::_createActions(void) {
   _aboutQtAct    = new QAction(tr("&About Qt.."), this);
 
   _toolsQag = new QActionGroup( this );
+
   _freehandAct = new QAction(tr("&Freehand"),  this);
   _lineAct = new QAction(tr("&Line"), this);
   _rectAct = new QAction(tr("&Rectangle"), this);
   _elipsisAct = new QAction(tr("&Elipsis"), this);
   _polyAct = new QAction(tr("&Polygon"), this);
   _textAct = new QAction(tr("&Text"), this);
+
   _freehandAct->setCheckable(true);
   _lineAct->setCheckable(true);
   _rectAct->setCheckable(true);
   _polyAct->setCheckable(true);
+  _elipsisAct->setCheckable(true);
+  _textAct->setCheckable(true);
 
    //Style Menu
   _fontAct = new QAction(tr("&Font..."), this);
@@ -116,11 +120,12 @@ void PaintWindow::_createActions(void) {
   _colorBrushAct->setIcon(QIcon(":/Images/colorize.png"));
   _colorBrushAct->setData(QVariant("_colorBrushAct data"));
 
-
-
     //WidthSubmenu
 
     //FillSubmenu
+  _fillBrushAct= new QAction(tr("&Fill"),  this);
+
+  _fillBrushAct->setCheckable(true);
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_connectActions(void) {
@@ -140,6 +145,7 @@ void PaintWindow::_connectActions(void) {
  _toolsQag->addAction(_rectAct);
  _toolsQag->addAction(_elipsisAct);
  _toolsQag->addAction(_polyAct);
+ _toolsQag->addAction(_textAct);
 
  _toolMenu->addAction(_freehandAct);
  _toolMenu->addAction(_lineAct);
@@ -151,14 +157,13 @@ void PaintWindow::_connectActions(void) {
 
  _penSubMenu->addAction(_colorPenAct);
  _brushSubMenu->addAction(_colorBrushAct);
+ _brushSubMenu->addAction(_fillBrushAct);
 
  _styleMenu->addAction(_fontAct);
 
  _helpMenu->addAction(_aboutAct);
  _helpMenu->addAction(_aboutQtAct);
 }
-
-//--------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------
 void PaintWindow::_connectSignals(void) {
@@ -172,17 +177,23 @@ void PaintWindow::_connectSignals(void) {
  connect(_freehandAct,SIGNAL(activated()),_signalMapper, SLOT(map()));
  connect(_lineAct,SIGNAL(activated()),_signalMapper, SLOT(map()));
  connect(_rectAct,SIGNAL(activated()),_signalMapper, SLOT(map()));
+ connect(_elipsisAct,SIGNAL(activated()),_signalMapper, SLOT(map()));
  connect(_polyAct,SIGNAL(activated()),_signalMapper, SLOT(map()));
+ connect(_textAct,SIGNAL(activated()),_signalMapper, SLOT(map()));
+
+ connect(_colorPenAct,SIGNAL(triggered()),this, SLOT(_changePenColor()));
+ connect(_colorBrushAct,SIGNAL(triggered()),this, SLOT(_changeBrushColor()));
 
  connect(_aboutAct, SIGNAL(triggered()),this, SLOT(_about()));
  connect(_aboutQtAct,SIGNAL(triggered()),this, SLOT(_aboutQt()));
 
  connect(_signalMapper,SIGNAL(mapped(int)), this, SIGNAL(toolMapped(int)));
- connect(this, SIGNAL(toolMapped(int)), _area, SLOT(setCurrentTool(int)) );
+ connect(this, SIGNAL(toolMapped(int)), _area, SLOT(setCurrentTool(int)));
+ connect(_fillBrushAct, SIGNAL(toggled(bool)), _area, SLOT(setFilled(bool)));
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_about(void) {
- QMessageBox::information( this,"About Us","Dupond - Dupont","Au boulot !");
+ QMessageBox::information( this,"About Us","Yannick GUERN\nSimon TENEAU\n\nCAI Labo 2 2014","Retour vers l'application' !");
 }
 
 void PaintWindow::_aboutQt(void) {
@@ -228,7 +239,39 @@ void PaintWindow::_open(void){
   _area->update();
 }
 
-
 void PaintWindow::quit(void)  {
   exit(0);
+}
+
+//--------------------------------------------------------------------------------
+void PaintWindow::_changePenColor(void)  {
+ qDebug() << "PaintWindow::_changePenColor(void)";
+ _area->setCurrentColor(QColorDialog::getColor(Qt::white, this));
+ qDebug() << _colorPen;
+}
+
+void PaintWindow::_changeBrushColor(void)  {
+ _area->setFillColor(QColorDialog::getColor(Qt::white, this));
+}
+
+
+
+void PaintWindow::keyPressEvent( QKeyEvent * event )
+{
+    qDebug() << "key pressed event " << event->key();
+    switch ( event->key() )
+    {
+        case (16777220): // enter main  ()
+            qDebug() << "Main enter ";
+            _area->setEnterState(true);
+            break;
+        case(16777221): //enter numpad
+             qDebug() << "numpad enter ";
+            _area->setEnterState(true);
+            break;
+        case(16777216): //escape
+             qDebug() << "escape";
+            _area->setEscapeState(true);
+            break;
+    }
 }

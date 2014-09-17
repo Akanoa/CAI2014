@@ -1,13 +1,13 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'paintArea.h'
 **
-** Created: Tue Sep 16 17:23:52 2014
+** Created: Wed 17. Sep 19:33:47 2014
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.6.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "Include/paintArea.h"
+#include "../../Guern-Teneau_Qt_B009/Include/paintArea.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'paintArea.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 62
@@ -23,7 +23,7 @@ static const uint qt_meta_data_PaintArea[] = {
        4,       // revision
        0,       // classname
        0,    0, // classinfo
-       1,   14, // methods
+       2,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -32,12 +32,14 @@ static const uint qt_meta_data_PaintArea[] = {
 
  // slots: signature, parameters, type, tag, flags
       11,   10,   10,   10, 0x0a,
+      31,   10,   10,   10, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_PaintArea[] = {
     "PaintArea\0\0setCurrentTool(int)\0"
+    "setCurrentColor(QColor)\0"
 };
 
 const QMetaObject PaintArea::staticMetaObject = {
@@ -70,9 +72,10 @@ int PaintArea::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: setCurrentTool((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: setCurrentColor((*reinterpret_cast< QColor(*)>(_a[1]))); break;
         default: ;
         }
-        _id -= 1;
+        _id -= 2;
     }
     return _id;
 }
