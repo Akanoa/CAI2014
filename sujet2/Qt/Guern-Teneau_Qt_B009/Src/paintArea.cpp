@@ -10,15 +10,15 @@ PaintArea::PaintArea(QWidget *parent) : QWidget(parent) {
   _escapeState=false;
   _enterState=false;
   _filled = false;
-
-  _bufferForm = new QPixmap(parent->size());
-  _bufferForm->fill(Qt::white);
 }
 
 void PaintArea::mousePressEvent(QMouseEvent* evt) {
   qDebug() << "PaintArea::mousePressEvent(void)";
   _release=false;
   _startPoint = _endPoint = evt->pos();
+  if(_currentTool == TOOLS_ID_POLYGON){
+      _listPointsPolygon.push_back(QPoint(evt->pos()));
+  }
 }
 
 void PaintArea::mouseMoveEvent(QMouseEvent* evt) 
@@ -48,21 +48,17 @@ void PaintArea::paintEvent(QPaintEvent* evt)
   qDebug() << _currentTool;
   QPainter paintWindow(this);
   QPainter paintBuffer(_buffer);
-  QPainter paintBufferForm(_bufferForm);
 
   paintWindow.drawPixmap(0,0, *_buffer);
-  //paintWindow.drawPixmap(0,0, *_bufferForm);
 
   QPen penColored(_currentColor);
   paintWindow.setPen(penColored);
   paintBuffer.setPen(penColored);
-  paintBufferForm.setPen(penColored);
 
   if (!_escapeState){
       if(_filled){
           paintWindow.setBrush(QBrush(_fillColor));
           paintBuffer.setBrush(QBrush(_fillColor));
-          paintBufferForm.setBrush(QBrush(_fillColor));
           switch(_currentTool) {
             case TOOLS_ID_FREEHAND :
               paintBuffer.drawPoint(_endPoint);
@@ -74,9 +70,10 @@ void PaintArea::paintEvent(QPaintEvent* evt)
               paintWindow.drawLine(_startPoint,_endPoint);
               break;
             case TOOLS_ID_POLYGON:
-              if (_release){
-                  paintBufferForm.drawLine(_startPoint,_endPoint);
-              }
+              //if (_release){
+                  //paintBufferForm.drawLine(_startPoint,_endPoint);
+              //}
+
               paintWindow.drawLine(_startPoint,_endPoint);
               break;
             case TOOLS_ID_RECTANGLE :
@@ -105,10 +102,34 @@ void PaintArea::paintEvent(QPaintEvent* evt)
               paintWindow.drawLine(_startPoint,_endPoint);
               break;
             case TOOLS_ID_POLYGON:
+              qDebug() << "Drawing polygon";
               if (_release){
-                  paintBufferForm.drawLine(_startPoint,_endPoint);
+                  //paintBufferForm.drawLine(_startPoint,_endPoint);
               }
-              paintWindow.drawLine(_startPoint,_endPoint);
+              if (_listPointsPolygon.size() != 0)
+              {
+                  QPolygon _polygonToDraw;
+                  for (unsigned int i=0; i < _listPointsPolygon.size() ; i++)
+                  {
+                      _polygonToDraw << _listPointsPolygon.at(i);
+                  }
+                  if (_enterState)
+                  {
+                      paintWindow.drawPolygon(_polygonToDraw);
+                      paintBuffer.drawPolygon(_polygonToDraw);
+                      //clear Polygon
+                      _listPointsPolygon.clear();
+                  }
+                  else
+                  {
+                      paintWindow.drawPolyline(_polygonToDraw);
+                      qDebug() << _listPointsPolygon.at(_listPointsPolygon.size()-1);
+                      qDebug() << _endPoint;
+                      paintWindow.drawLine(_listPointsPolygon.at(_listPointsPolygon.size()-1),_endPoint);
+                  }
+
+              }
+
               break;
             case TOOLS_ID_RECTANGLE :
               qDebug() << "PaintArea:: draw Rect";
@@ -128,17 +149,15 @@ void PaintArea::paintEvent(QPaintEvent* evt)
   else
   {
       _startPoint = _endPoint;
+      _listPointsPolygon.clear();
   }
   if (_escapeState) {
       qDebug() << "Delete bufferForm - escape state";
-      //_bufferForm->fill(Qt::white);
       setEscapeState(false);
   }
   if (_enterState) {
     qDebug() << "Draw buffer Form ";
-    //paintBuffer.drawPixmap(0,0, *_bufferForm);
     setEnterState(false);
-    //_bufferForm->fill(Qt::white);
   }
 
 }
@@ -163,6 +182,15 @@ void PaintArea::setFillColor(QColor color){
 QPixmap* PaintArea::getBuffer(void){
   return _buffer;
 }
+
+void PaintArea::clearDrawArea(void){
+    qDebug() << "cleaning draw area :";
+     _startPoint = _endPoint;
+    this->getBuffer()->fill(Qt::white);
+    _listPointsPolygon.clear();
+    update();
+}
+
 void PaintArea::setEnterState(bool value){
     qDebug() << "Enter state :" <<value;
     _enterState = value;

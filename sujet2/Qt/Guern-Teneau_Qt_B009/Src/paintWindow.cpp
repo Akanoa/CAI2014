@@ -10,9 +10,14 @@ PaintWindow::PaintWindow(QWidget *parent) : QMainWindow(parent) {
    _createActions();
    _createToolBars();
    _connectActions();
-
-  _area = new PaintArea(this);
-   setCentralWidget(_area);
+  _scrolledArea = new QScrollArea();
+  _scrolledArea->resize(this->width(),this->height());
+   _area = new PaintArea(_scrolledArea);
+  _scrolledArea->setWidget(_area);
+  _scrolledArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  _scrolledArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  _scrolledArea->setWidgetResizable(true);
+  this->setCentralWidget(_scrolledArea);
 
   _signalMapper = new QSignalMapper(this);
   _signalMapper->setMapping(_freehandAct, TOOLS_ID_FREEHAND);
@@ -201,11 +206,32 @@ void PaintWindow::_aboutQt(void) {
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_newFile(void)  {
+
  qDebug() << "PaintWindow::_newFile(void)";
+ QMessageBox msgBox;
+ msgBox.setText("Le document a été modifié. Vous voulez ouvrir un nouveau fichier.");
+ msgBox.setInformativeText("Voulez-vous enregistrer les changements ?");
+ msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Ignore);
+ msgBox.setDefaultButton(QMessageBox::Save);
+ int ret = msgBox.exec();
 
-
-
-
+ switch (ret) {
+    case QMessageBox::Save:
+        // Clic sur Enregistrer
+        _saveAs();
+        break;
+    case QMessageBox::Ignore:
+        // Clic sur nouveau sans enregistrer
+        _area->clearDrawArea();
+        break;
+    case QMessageBox::Cancel:
+        // Clic sur Annuler
+        //DO NOTHING
+        break;
+    default:
+        // ne doit pas se produire
+        break;
+    }
 }
 
 void PaintWindow::_save(void){
@@ -299,4 +325,10 @@ void PaintWindow::keyPressEvent( QKeyEvent * event )
             _area->setEscapeState(true);
             break;
     }
+}
+
+void PaintWindow::closeEvent(QCloseEvent *event)
+{
+    quit();
+    event->ignore();
 }

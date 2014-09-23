@@ -21,12 +21,14 @@ class PaintArea : public QWidget
     void setCurrentColor(QColor);
     void setFillColor(QColor);
     void setFilled(bool);
+    void clearDrawArea(void);
   protected :
     void mousePressEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void mouseDoubleClickEvent(QMouseEvent* evt);
     void paintEvent(QPaintEvent*);
+
   private :
    QPoint  _startPoint,_endPoint;
    QPixmap *_buffer;
@@ -37,6 +39,7 @@ class PaintArea : public QWidget
    bool _escapeState;
    QPixmap *_bufferForm;
    bool _filled;
+   std::vector<QPoint> _listPointsPolygon;
 };
 #endif
 

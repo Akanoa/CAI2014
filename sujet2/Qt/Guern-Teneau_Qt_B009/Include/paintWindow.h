@@ -50,9 +50,11 @@ class PaintWindow : public QMainWindow
 
  protected :
    void keyPressEvent( QKeyEvent *event );
+   void closeEvent (QCloseEvent *);
 
    // client
    PaintArea *_area;
+   QScrollArea* _scrolledArea;
    // menus
    QToolBar *_toolBar;
    QMenu *_fileMenu, *_toolMenu,*_styleMenu, *_helpMenu ;
