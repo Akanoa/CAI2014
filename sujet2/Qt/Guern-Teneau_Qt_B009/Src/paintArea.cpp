@@ -9,6 +9,7 @@ PaintArea::PaintArea(QWidget *parent) : QWidget(parent) {
   _release=false;
   _escapeState=false;
   _enterState=false;
+  _filled = false;
 
   _bufferForm = new QPixmap(parent->size());
   _bufferForm->fill(Qt::white);
@@ -30,6 +31,7 @@ void PaintArea::mouseMoveEvent(QMouseEvent* evt)
 void PaintArea::mouseReleaseEvent(QMouseEvent* evt) 
 {
   qDebug() << "PaintArea::mouseReleaseEvent(void)";
+  qDebug() << evt;
   _release=true;
   update();
 
@@ -37,6 +39,7 @@ void PaintArea::mouseReleaseEvent(QMouseEvent* evt)
 
 void PaintArea::mouseDoubleClickEvent (QMouseEvent* evt) {
   qDebug() << "PaintArea::mouseDoubleClickEvent(void)";
+  qDebug() << evt;
 }
 
 void PaintArea::paintEvent(QPaintEvent* evt) 
@@ -55,83 +58,87 @@ void PaintArea::paintEvent(QPaintEvent* evt)
   paintBuffer.setPen(penColored);
   paintBufferForm.setPen(penColored);
 
-  if(_filled){
-      paintWindow.setBrush(QBrush(_fillColor));
-      paintBuffer.setBrush(QBrush(_fillColor));
-      paintBufferForm.setBrush(QBrush(_fillColor));
-      switch(_currentTool) {
-        case TOOLS_ID_FREEHAND :
-          paintBuffer.drawPoint(_endPoint);
-          paintWindow.drawPoint(_endPoint);
-          break;
-        case TOOLS_ID_LINE :
-          qDebug() << "PaintArea:: draw Line";
-          if (_release) paintBuffer.drawLine(_startPoint,_endPoint);
-          paintWindow.drawLine(_startPoint,_endPoint);
-          break;
-        case TOOLS_ID_POLYGON:
-          if (_release){
-              paintBufferForm.drawLine(_startPoint,_endPoint);
-          }
-          paintWindow.drawLine(_startPoint,_endPoint);
-          break;
-        case TOOLS_ID_RECTANGLE :
-          qDebug() << "PaintArea:: draw Rect";
-          if (_release) paintBuffer.fillRect(QRect(_startPoint,_endPoint), _fillColor);
-          paintWindow.fillRect(QRect(_startPoint,_endPoint), _fillColor);
-          break;
-       case TOOLS_ID_CIRCLE :
-          qDebug() << "PaintArea:: draw CIRCLE";
-          if (_release) paintBuffer.drawEllipse(QRect(_startPoint,_endPoint));
-          paintWindow.drawEllipse(QRect(_startPoint,_endPoint));
-          break;
-        default :
-          break;
-    }
+  if (!_escapeState){
+      if(_filled){
+          paintWindow.setBrush(QBrush(_fillColor));
+          paintBuffer.setBrush(QBrush(_fillColor));
+          paintBufferForm.setBrush(QBrush(_fillColor));
+          switch(_currentTool) {
+            case TOOLS_ID_FREEHAND :
+              paintBuffer.drawPoint(_endPoint);
+              paintWindow.drawPoint(_endPoint);
+              break;
+            case TOOLS_ID_LINE :
+              qDebug() << "PaintArea:: draw Line";
+              if (_release) paintBuffer.drawLine(_startPoint,_endPoint);
+              paintWindow.drawLine(_startPoint,_endPoint);
+              break;
+            case TOOLS_ID_POLYGON:
+              if (_release){
+                  paintBufferForm.drawLine(_startPoint,_endPoint);
+              }
+              paintWindow.drawLine(_startPoint,_endPoint);
+              break;
+            case TOOLS_ID_RECTANGLE :
+              qDebug() << "PaintArea:: draw Rect";
+              if (_release) paintBuffer.fillRect(QRect(_startPoint,_endPoint), _fillColor);
+              paintWindow.fillRect(QRect(_startPoint,_endPoint), _fillColor);
+              break;
+           case TOOLS_ID_CIRCLE :
+              qDebug() << "PaintArea:: draw CIRCLE";
+              if (_release) paintBuffer.drawEllipse(QRect(_startPoint,_endPoint));
+              paintWindow.drawEllipse(QRect(_startPoint,_endPoint));
+              break;
+            default :
+              break;
+        }
+      }
+      else{
+          switch(_currentTool) {
+            case TOOLS_ID_FREEHAND :
+              paintBuffer.drawPoint(_endPoint);
+              paintWindow.drawPoint(_endPoint);
+              break;
+            case TOOLS_ID_LINE :
+              qDebug() << "PaintArea:: draw Line";
+              if (_release) paintBuffer.drawLine(_startPoint,_endPoint);
+              paintWindow.drawLine(_startPoint,_endPoint);
+              break;
+            case TOOLS_ID_POLYGON:
+              if (_release){
+                  paintBufferForm.drawLine(_startPoint,_endPoint);
+              }
+              paintWindow.drawLine(_startPoint,_endPoint);
+              break;
+            case TOOLS_ID_RECTANGLE :
+              qDebug() << "PaintArea:: draw Rect";
+              if (_release) paintBuffer.drawRect(QRect(_startPoint,_endPoint));
+              paintWindow.drawRect(QRect(_startPoint,_endPoint));
+              break;
+           case TOOLS_ID_CIRCLE :
+              qDebug() << "PaintArea:: draw CIRCLE";
+              if (_release) paintBuffer.drawEllipse(QRect(_startPoint,_endPoint));
+              paintWindow.drawEllipse(QRect(_startPoint,_endPoint));
+              break;
+            default :
+              break;
+        }
+      }
   }
-  else{
-      switch(_currentTool) {
-        case TOOLS_ID_FREEHAND :
-          paintBuffer.drawPoint(_endPoint);
-          paintWindow.drawPoint(_endPoint);
-          break;
-        case TOOLS_ID_LINE :
-          qDebug() << "PaintArea:: draw Line";
-          if (_release) paintBuffer.drawLine(_startPoint,_endPoint);
-          paintWindow.drawLine(_startPoint,_endPoint);
-          break;
-        case TOOLS_ID_POLYGON:
-          if (_release){
-              paintBufferForm.drawLine(_startPoint,_endPoint);
-          }
-          paintWindow.drawLine(_startPoint,_endPoint);
-          break;
-        case TOOLS_ID_RECTANGLE :
-          qDebug() << "PaintArea:: draw Rect";
-          if (_release) paintBuffer.drawRect(QRect(_startPoint,_endPoint));
-          paintWindow.drawRect(QRect(_startPoint,_endPoint));
-          break;
-       case TOOLS_ID_CIRCLE :
-          qDebug() << "PaintArea:: draw CIRCLE";
-          if (_release) paintBuffer.drawEllipse(QRect(_startPoint,_endPoint));
-          paintWindow.drawEllipse(QRect(_startPoint,_endPoint));
-          break;
-        default :
-          break;
-    }
+  else
+  {
+      _startPoint = _endPoint;
   }
-
-  /* TODO */
-  if (_escapeState && false) {
-      qDebug() << "Delete bufferForm";
-      _bufferForm->fill(Qt::white);
+  if (_escapeState) {
+      qDebug() << "Delete bufferForm - escape state";
+      //_bufferForm->fill(Qt::white);
       setEscapeState(false);
   }
-  if (_enterState && false) {
-    qDebug() << "Draw buffer Form";
-    paintBuffer.drawPixmap(0,0, *_bufferForm);
+  if (_enterState) {
+    qDebug() << "Draw buffer Form ";
+    //paintBuffer.drawPixmap(0,0, *_bufferForm);
     setEnterState(false);
-    _bufferForm->fill(Qt::white);
+    //_bufferForm->fill(Qt::white);
   }
 
 }
@@ -159,9 +166,11 @@ QPixmap* PaintArea::getBuffer(void){
 void PaintArea::setEnterState(bool value){
     qDebug() << "Enter state :" <<value;
     _enterState = value;
+    update();
 }
 
 void PaintArea::setEscapeState(bool value){
     qDebug() << "Escape state :" <<value;
     _escapeState = value;
+    update();
 }

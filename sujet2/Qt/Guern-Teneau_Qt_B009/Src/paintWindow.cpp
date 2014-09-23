@@ -202,6 +202,10 @@ void PaintWindow::_aboutQt(void) {
 //--------------------------------------------------------------------------------
 void PaintWindow::_newFile(void)  {
  qDebug() << "PaintWindow::_newFile(void)";
+
+
+
+
 }
 
 void PaintWindow::_save(void){
@@ -240,7 +244,30 @@ void PaintWindow::_open(void){
 }
 
 void PaintWindow::quit(void)  {
-  exit(0);
+    QMessageBox msgBox;
+    msgBox.setText("Le document a été modifié. et vous aller quitter le programme.");
+    msgBox.setInformativeText("Voulez-vous enregistrer les changements ?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+
+    switch (ret) {
+       case QMessageBox::Save:
+           // Clic sur Enregistrer
+           _saveAs();
+           break;
+       case QMessageBox::Discard:
+           // Clic sur fermer sans enregistrer
+           exit(0);
+           break;
+       case QMessageBox::Cancel:
+           // Clic sur Annuler
+           //DO NOTHING
+           break;
+       default:
+           // ne doit pas se produire
+           break;
+     }
 }
 
 //--------------------------------------------------------------------------------
@@ -253,8 +280,6 @@ void PaintWindow::_changePenColor(void)  {
 void PaintWindow::_changeBrushColor(void)  {
  _area->setFillColor(QColorDialog::getColor(Qt::white, this));
 }
-
-
 
 void PaintWindow::keyPressEvent( QKeyEvent * event )
 {

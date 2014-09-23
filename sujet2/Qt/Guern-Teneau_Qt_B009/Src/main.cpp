@@ -1,5 +1,6 @@
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QTextCodec>
 
 #include "paintWindow.h"
 
@@ -27,6 +28,8 @@ void center(QWidget &widget)
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);  
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
+
 
   PaintWindow window;
 
