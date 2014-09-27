@@ -36,6 +36,7 @@ void PaintWindow::_createMenus(void) {
  QMenuBar* menubar = menuBar(); 
  statusBar()->showMessage("Ready");
  _fileMenu = menubar->addMenu( tr("&File") );
+ _editMenu = menubar->addMenu(tr("&Edit"));
  _toolMenu = menubar->addMenu(tr("&Tools"));
  _styleMenu = menubar->addMenu("&Style");
  _helpMenu = menubar->addMenu( tr("&Help") );
@@ -45,11 +46,27 @@ void PaintWindow::_createMenus(void) {
  _linePenSubMenu = _penSubMenu->addMenu( tr("&Line") );
  _widthPenSubMenu = _penSubMenu->addMenu( tr("&Width"));
  _brushSubMenu = _styleMenu->addMenu( tr("&Brush") );
+ _fillBrushSubMenu = _brushSubMenu->addMenu(tr("&Type") );
  //_fillBrushSubMenu = _brushSubMenu->addMenu( tr("&Fill") );
+
+ //Create PopUp
+ _popUpMenu = new QMenu();
+ _popUpMenu->addMenu(_editMenu);
+ _popUpMenu->addMenu(_toolMenu);
+ _popUpMenu->addMenu(_styleMenu);
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_createToolBars(void) {
  _toolBar=addToolBar( tr("File") ); 
+ _editToolBar=addToolBar( tr("Edit") );
+
+ _toolsToolBar = new QToolBar( tr("Tools"));
+ _toolsToolBar->setOrientation(Qt::Vertical);
+ addToolBar(Qt::LeftToolBarArea ,_toolsToolBar);
+
+ _styleToolBar = new QToolBar( tr("Style"));
+ _styleToolBar->setOrientation(Qt::Vertical);
+ addToolBar(Qt::RightToolBarArea ,_styleToolBar);
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_createActions(void) {
@@ -70,14 +87,14 @@ void PaintWindow::_createActions(void) {
 
   _saveAct = new QAction(QIcon(":/Images/save.png"), tr("&Save"), this);
   _saveAct->setShortcut(tr("Ctrl+S"));
-  _saveAct->setToolTip(tr("Sauvegarde dans un fichier par défaut"));
-  _saveAct->setStatusTip(tr("Sauvegarde..."));
+  _saveAct->setToolTip(tr("Save in defaultFile or choosen file."));
+  _saveAct->setStatusTip(tr("Save in defaultFile or choosen file."));
   _saveAct->setData(QVariant("_saveAct data"));
 
-  _saveAsAct = new QAction(QIcon(":/Images/save.png"), tr("Save as"), this);
+  _saveAsAct = new QAction(QIcon(":/Images/save_as.png"), tr("Save as"), this);
   _saveAsAct->setShortcut(tr("Ctrl+Shift+S"));
-  _saveAsAct->setToolTip(tr("Sauvegarde dans un fichier"));
-  _saveAsAct->setStatusTip(tr("Sauvegarde..."));
+  _saveAsAct->setToolTip(tr("Choose the file where you want to save your draw..."));
+  _saveAsAct->setStatusTip(tr("Choose the file where you want to save your draw..."));
   _saveAsAct->setData(QVariant("_saveAsAct data"));
 
   _exitAct = new QAction(tr("&Exit..."), this);
@@ -93,11 +110,40 @@ void PaintWindow::_createActions(void) {
   _toolsQag = new QActionGroup( this );
 
   _freehandAct = new QAction(tr("&Freehand"),  this);
+  _freehandAct->setToolTip(tr("Freehand"));
+  _freehandAct->setStatusTip(tr("Freehand"));
+  _freehandAct->setIcon(QIcon(":/Images/tool_pen.png"));
+  _freehandAct->setData(QVariant("_freehandAct data"));
+
   _lineAct = new QAction(tr("&Line"), this);
+  _lineAct->setToolTip(tr("Line"));
+  _lineAct->setStatusTip(tr("Line"));
+  _lineAct->setIcon(QIcon(":/Images/tool_line.png"));
+  _lineAct->setData(QVariant("_lineAct data"));
+
   _rectAct = new QAction(tr("&Rectangle"), this);
+  _rectAct->setToolTip(tr("Rectangle"));
+  _rectAct->setStatusTip(tr("Rectangle Selection"));
+  _rectAct->setIcon(QIcon(":/Images/tool_rectangle.png"));
+  _rectAct->setData(QVariant("_rectAct data"));
+
   _elipsisAct = new QAction(tr("&Elipsis"), this);
+  _elipsisAct->setToolTip(tr("Ellipse"));
+  _elipsisAct->setStatusTip(tr("Ellipse Selection"));
+  _elipsisAct->setIcon(QIcon(":/Images/tool_ellipse.png"));
+  _elipsisAct->setData(QVariant("_elipsisAct data"));
+
   _polyAct = new QAction(tr("&Polygon"), this);
+  _polyAct->setToolTip(tr("Polygon"));
+  _polyAct->setStatusTip(tr("Polygon"));
+  _polyAct->setIcon(QIcon(":/Images/tool_polygon.png"));
+  _polyAct->setData(QVariant("_polyAct data"));
+
   _textAct = new QAction(tr("&Text"), this);
+  _textAct->setToolTip(tr("Text"));
+  _textAct->setStatusTip(tr("Text"));
+  _textAct->setIcon(QIcon(":/Images/tool_font.png"));
+  _textAct->setData(QVariant("_fontAct data"));
 
   _freehandAct->setCheckable(true);
   _lineAct->setCheckable(true);
@@ -110,8 +156,9 @@ void PaintWindow::_createActions(void) {
   _fontAct = new QAction(tr("&Font..."), this);
   _fontAct->setToolTip(tr("Font"));
   _fontAct->setStatusTip(tr("Font Selection"));
-  _fontAct->setIcon(QIcon(":/Images/colorize.png"));
+  _fontAct->setIcon(QIcon(":/Images/tool_font.png"));
   _fontAct->setData(QVariant("_fontAct data"));
+
      //linePen submenu
   _colorPenAct = new QAction(tr("&Couleur..."), this);
   _colorPenAct->setToolTip(tr("Pen Color"));
@@ -126,10 +173,22 @@ void PaintWindow::_createActions(void) {
   _colorBrushAct->setData(QVariant("_colorBrushAct data"));
 
     //WidthSubmenu
+  _undoAction = new QAction(tr("&Undo"), this);
+  _undoAction->setShortcut(tr("Ctrl+z"));
+  _undoAction->setToolTip(tr("Undo"));
+  _undoAction->setStatusTip(tr("Undo"));
+  _undoAction->setIcon(QIcon(":/Images/undo.png"));
+  _undoAction->setData(QVariant("_colorBrushAct data"));
+
+  _clearAction = new QAction(tr("&Clear"), this);
+  _clearAction->setShortcut(tr("Ctrl+F"));
+  _clearAction->setToolTip(tr("Clear"));
+  _clearAction->setStatusTip(tr("Clear"));
+  _clearAction->setIcon(QIcon(":/Images/clear.png"));
+  _clearAction->setData(QVariant("_clearAction data"));
 
     //FillSubmenu
   _fillBrushAct= new QAction(tr("&Fill"),  this);
-
   _fillBrushAct->setCheckable(true);
 }
 //--------------------------------------------------------------------------------
@@ -143,7 +202,18 @@ void PaintWindow::_connectActions(void) {
  _fileMenu->addAction(_exitAct);
 
  _toolBar->addAction(_newAct);
+ _toolBar->insertSeparator(_openAct);
+ _toolBar->addAction(_openAct);
+ _toolBar->addAction(_saveAct);
+ _toolBar->addAction(_saveAsAct);
+ _toolBar->insertSeparator(_exitAct);
  _toolBar->addAction(_exitAct);
+
+ _editMenu->addAction(_undoAction);
+ _editMenu->addAction(_clearAction);
+
+ _editToolBar->addAction(_undoAction);
+ _editToolBar->addAction(_clearAction);
 
  _toolsQag->addAction(_freehandAct);
  _toolsQag->addAction(_lineAct);
@@ -160,11 +230,27 @@ void PaintWindow::_connectActions(void) {
  _toolMenu->insertSeparator(_textAct);
  _toolMenu->addAction(_textAct);
 
+ _toolsToolBar->addAction(_freehandAct);
+ _toolsToolBar->addAction(_lineAct);
+ _toolsToolBar->addAction(_rectAct);
+ _toolsToolBar->addAction(_elipsisAct);
+ _toolsToolBar->addAction(_polyAct);
+ _toolsToolBar->insertSeparator(_textAct);
+ _toolsToolBar->addAction(_textAct);
+
  _penSubMenu->addAction(_colorPenAct);
  _brushSubMenu->addAction(_colorBrushAct);
  _brushSubMenu->addAction(_fillBrushAct);
 
  _styleMenu->addAction(_fontAct);
+
+ /*
+ _styleToolBar->addAction(_penSubMenu);
+ _styleToolBar->addAction(_colorBrushAct);
+ _styleToolBar->addAction(_brushSubMenu);
+ _styleToolBar->insertSeparator(_fontAct);
+ _styleToolBar->addAction(_fontAct);
+ */
 
  _helpMenu->addAction(_aboutAct);
  _helpMenu->addAction(_aboutQtAct);
@@ -188,6 +274,7 @@ void PaintWindow::_connectSignals(void) {
 
  connect(_colorPenAct,SIGNAL(triggered()),this, SLOT(_changePenColor()));
  connect(_colorBrushAct,SIGNAL(triggered()),this, SLOT(_changeBrushColor()));
+ connect(_fontAct, SIGNAL(triggered()), this, SLOT(_changeFont()));
 
  connect(_aboutAct, SIGNAL(triggered()),this, SLOT(_about()));
  connect(_aboutQtAct,SIGNAL(triggered()),this, SLOT(_aboutQt()));
@@ -195,6 +282,12 @@ void PaintWindow::_connectSignals(void) {
  connect(_signalMapper,SIGNAL(mapped(int)), this, SIGNAL(toolMapped(int)));
  connect(this, SIGNAL(toolMapped(int)), _area, SLOT(setCurrentTool(int)));
  connect(_fillBrushAct, SIGNAL(toggled(bool)), _area, SLOT(setFilled(bool)));
+
+ connect(_undoAction, SIGNAL(triggered()), this, SLOT(_undo()));
+ connect(_clearAction, SIGNAL(triggered()), this, SLOT(_clear()));
+
+ //pop-up
+ connect(_area,SIGNAL(popUpAsked(QPoint)), this, SLOT(showPopUp(QPoint)));
 }
 //--------------------------------------------------------------------------------
 void PaintWindow::_about(void) {
@@ -209,6 +302,7 @@ void PaintWindow::_newFile(void)  {
 
  qDebug() << "PaintWindow::_newFile(void)";
  QMessageBox msgBox;
+ msgBox.setIcon(QMessageBox::Warning);
  msgBox.setText("Le document a été modifié. Vous voulez ouvrir un nouveau fichier.");
  msgBox.setInformativeText("Voulez-vous enregistrer les changements ?");
  msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Cancel | QMessageBox::Ignore);
@@ -259,6 +353,7 @@ void PaintWindow::_saveAs(void){
 
 }
 
+
 void PaintWindow::_open(void){
   QString openfilename = QFileDialog::getOpenFileName(this, tr("Open File"), QString());
   // QByteArray ba;
@@ -271,6 +366,7 @@ void PaintWindow::_open(void){
 
 void PaintWindow::quit(void)  {
     QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
     msgBox.setText("Le document a été modifié. et vous aller quitter le programme.");
     msgBox.setInformativeText("Voulez-vous enregistrer les changements ?");
     msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -307,6 +403,33 @@ void PaintWindow::_changeBrushColor(void)  {
  _area->setFillColor(QColorDialog::getColor(Qt::white, this));
 }
 
+
+void PaintWindow::_undo(void)  {
+ qDebug() << "undoPaintWindow";
+ _area->undo();
+}
+
+void PaintWindow::_clear(){
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Question);
+    msgBox.setText("You have clicked on the clear option, this will delete all yours modifications");
+    msgBox.setInformativeText("Do your really want to clear the screen?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+    int ret = msgBox.exec();
+    switch (ret) {
+       case QMessageBox::Yes:
+            qDebug() << "clearWindow";
+            _area->clearDrawArea();
+           break;
+       case QMessageBox::No:
+            //TONOTHING
+           break;
+       default:
+           break;
+       }
+}
+
 void PaintWindow::keyPressEvent( QKeyEvent * event )
 {
     qDebug() << "key pressed event " << event->key();
@@ -315,20 +438,47 @@ void PaintWindow::keyPressEvent( QKeyEvent * event )
         case (16777220): // enter main  ()
             qDebug() << "Main enter ";
             _area->setEnterState(true);
+            if(_area->getEditing())_area->setEndEdition();
             break;
         case(16777221): //enter numpad
              qDebug() << "numpad enter ";
             _area->setEnterState(true);
+            if(_area->getEditing())_area->setEndEdition();
             break;
         case(16777216): //escape
              qDebug() << "escape";
             _area->setEscapeState(true);
             break;
     }
+
+    if(_area->getEditing())
+    {
+      _area->setCurrentText(event->text());
+      update();
+    }
+}
+
+
+void PaintWindow::_changeFont()
+{
+  bool ok;
+  QFont font = QFontDialog::getFont(
+                 &ok, QFont("Helvetica [Cronyx]", 10), this);
+  if (ok) {
+     _area->setFont(font);
+  } else {
+    _area->setFont(QFont("Helvetica [Cronyx]", 10));
+  }
 }
 
 void PaintWindow::closeEvent(QCloseEvent *event)
 {
     quit();
     event->ignore();
+}
+
+void PaintWindow::showPopUp(QPoint value)
+{
+       qDebug() << "show pop up " << value;
+       _popUpMenu->exec(value);
 }

@@ -15,6 +15,7 @@
 #include <QSignalMapper>
 #include <QFileDialog>
 #include <QColorDialog>
+#include <QFontDialog>
 #include <QKeyEvent>
 
 #include <QDebug>
@@ -32,6 +33,7 @@ class PaintWindow : public QMainWindow
    void toolMapped(int digit);
   public slots :
     void quit(void);
+    void showPopUp(QPoint value);
   private slots :
     void _newFile(void);
     void _save(void);
@@ -39,8 +41,11 @@ class PaintWindow : public QMainWindow
     void _open(void);
     void _changePenColor(void);
     void _changeBrushColor(void);
+    void _changeFont();
     void _about(void);
     void _aboutQt(void);
+    void _undo(void);
+    void _clear(void);
   private :
    void _createMenus(void);
    void _createToolBars(void);
@@ -56,8 +61,8 @@ class PaintWindow : public QMainWindow
    PaintArea *_area;
    QScrollArea* _scrolledArea;
    // menus
-   QToolBar *_toolBar;
-   QMenu *_fileMenu, *_toolMenu,*_styleMenu, *_helpMenu ;
+   QToolBar *_toolBar, *_editToolBar, *_toolsToolBar, *_styleToolBar;
+   QMenu *_fileMenu, *_editMenu, *_toolMenu,*_styleMenu, *_helpMenu, *_popUpMenu ;
    //SubMenus
    QMenu *_penSubMenu, *_brushSubMenu,*_linePenSubMenu, *_widthPenSubMenu, *_fillBrushSubMenu;
    // actions
@@ -65,6 +70,7 @@ class PaintWindow : public QMainWindow
    QActionGroup *_toolsQag;
    QAction *_freehandAct, *_lineAct, *_rectAct, *_elipsisAct, *_polyAct, *_textAct;
    QAction *_colorPenAct, *_colorBrushAct, *_fontAct, *_fillBrushAct;
+   QAction *_undoAction, *_clearAction;
    // mapping 
    QSignalMapper *_signalMapper;
    //Filename
