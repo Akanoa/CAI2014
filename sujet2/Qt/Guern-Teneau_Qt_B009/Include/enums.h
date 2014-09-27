@@ -7,7 +7,7 @@ enum toolsID {
 	TOOLS_ID_RECTANGLE,
 	TOOLS_ID_CIRCLE, 
 	TOOLS_ID_POLYGON, 
-    TOOLS_ID_TEXT
+        TOOLS_ID_TEXT
 };
 
 enum menusID{
@@ -18,7 +18,7 @@ enum menusID{
 	TOOLS_MENU_ID_FREEHAND, 
 	TOOLS_MENU_ID_LINE, 
 	TOOLS_MENU_ID_CIRCLE, 
-    TOOLS_MENU_ID_RECTANGLE,
+        TOOLS_MENU_ID_RECTANGLE,
 	TOOLS_MENU_ID_POLYGON, 
 	TOOLS_MENU_ID_TEXT, 
 	STYLE_MENU_ID_PEN, 
@@ -46,6 +46,14 @@ enum joinPenID {
         JOIN_PEN_ID_MITER,
         JOIN_PEN_ID_BEVEL,
         JOIN_PEN_ID_ROUND
+};
+
+enum widthPenID {
+        WIDTH_PEN_ID_MIN,
+        WIDTH_PEN_ID_SEL1,
+        WIDTH_PEN_ID_SEL2,
+        WIDTH_PEN_ID_SEL3,
+        WIDTH_PEN_ID_MAX
 };
 
 enum styleBrushID {

@@ -25,9 +25,13 @@ class PaintArea : public QWidget
     void popUpAsked(QPoint value);
   public slots:
     void setCurrentTool(int);
+    void setCurrentStylePen(int);
+    void setCurrentCapPen(int);
+    void setCurrentJoinPen(int);
+    void setCurrentStyleBrush(int);
     void setCurrentColor(QColor);
     void setFillColor(QColor);
-    void setFilled(bool);
+    void setCurrentWidthPen(int value);
     void clearDrawArea(void);
   protected :
     void mousePressEvent(QMouseEvent*);
@@ -41,7 +45,12 @@ class PaintArea : public QWidget
    QPoint  _startPoint,_endPoint;
    QPixmap *_buffer;
    int _currentTool;
+   Qt::PenStyle _currentStylePen;
+   Qt::PenCapStyle _currentCapPen;
+   Qt::PenJoinStyle _currentJoinPen;
+   Qt::BrushStyle _currentStyleBrush;
    QColor _currentColor, _fillColor;
+   int _currentWidthPen;
    bool _release;
    bool _enterState;
    bool _escapeState;

@@ -18,5 +18,7 @@
         <file>Images/clear.png</file>
         <file>Images/blue.png</file>
         <file>Images/black.png</file>
+        <file>Images/undo.png</file>
+        <file>Images/redo.png</file>
     </qresource>
 </RCC>

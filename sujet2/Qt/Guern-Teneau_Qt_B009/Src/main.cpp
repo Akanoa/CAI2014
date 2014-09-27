@@ -10,8 +10,8 @@ void center(QWidget &widget)
   int screenWidth;
   int screenHeight;
 
-  int WIDTH = 1000;
-  int HEIGHT = 500;
+  int WIDTH = 1200;
+  int HEIGHT = 900;
 
   QDesktopWidget *desktop = QApplication::desktop();
 
